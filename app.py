@@ -1,22 +1,30 @@
 #!./env/bin/python3
+import pdb
 import datetime
 import urllib.request
 from bs4 import BeautifulSoup
 from flask import Flask
 from flask import render_template
+from flask import jsonify
 
-OCAT_URL = "https://overclockers.at"
+OCAT_URL = 'https://overclockers.at'
+RECENT_RES = 'search.php?action=getdaily'
 
 app = Flask(__name__)
 
 
-def get_ocat_html():
+def get_news_html():
     response = urllib.request.urlopen(OCAT_URL)
     return response.read()
 
 
+def get_recent_html():
+    response = urllib.request.urlopen("{}/{}".format(OCAT_URL, RECENT_RES))
+    return response.read()
+
+
 def parse_news():
-    html = BeautifulSoup(get_ocat_html())
+    html = BeautifulSoup(get_news_html())
     news = []
 
     for item in html.find_all(class_="news"):
@@ -40,10 +48,62 @@ def parse_news():
     return news
 
 
+def parse_recent():
+    recent_posts = BeautifulSoup(get_recent_html())
+    recent = [];
+
+    for row in recent_posts.find(id='idThreadTable').find('tbody').find_all('tr'):
+        a = row.find(class_='title').find('h5').find('a')
+        title = a.text
+        link = OCAT_URL + a.get('href')
+        forum = row.find(class_='forum').find('a').text.strip()
+        forum_link = OCAT_URL + row.find(class_='forum').find('a').get('href')
+        starter = row.find(class_='starter').find('a').text.strip()
+        starter_link = OCAT_URL + row.find(class_='starter').find('a').get('href')
+        last_post = row.find(class_='lastpost')
+        # pdb.set_trace()
+        last_post_date = last_post.contents[0].strip()
+        last_post_by = last_post.contents[1].contents[1].text
+        last_post_by_link = OCAT_URL + last_post.contents[1].contents[1].get('href')
+        last_post_link = OCAT_URL + last_post.contents[1].contents[3].get('href')
+
+        recent.append({
+            'title': title,
+            'link': link,
+            'forum': {
+                'name': forum,
+                'link': forum_link,
+            },
+            'starter': {
+                'name': starter,
+                'link': starter_link,
+            },
+            'lastPost': {
+                'by': {
+                    'name': last_post_by,
+                    'link': last_post_by_link,
+                },
+                'date': last_post_date,
+                'link': last_post_link,
+            },
+        })
+
+    return recent
+
 @app.route('/')
 def index():
     news = parse_news()
     return render_template('rss2.0.xml', news=news)
+
+
+@app.route('/news.json')
+def news():
+    return jsonify(news=parse_news())
+
+
+@app.route('/recent.json')
+def recent():
+    return jsonify(threads=parse_recent())
 
 
 if __name__ == '__main__':
