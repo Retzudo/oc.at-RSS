@@ -20,16 +20,19 @@ def parse_news():
     news = []
 
     for item in html.find_all(class_="news"):
-        h2 = item.find("h2")
-        a = h2.find("a")
+        a = item.find("h2").find("a")
+        title = a.string
+        link = OCAT_URL + a.get('href')
+        description = item.find(class_='previewtext').text.strip()
+
         details = item.find(class_='details')
         author = details.contents[2].strip()
         date_string = details.contents[4].strip()
 
         news.append({
-            'title': a.string,
-            'link': OCAT_URL + a.get('href'),
-            'description': item.find(class_='previewtext').text.strip(),
+            'title': title,
+            'link': link,
+            'description': description,
             'author': author,
             'date': date_string,
         })
