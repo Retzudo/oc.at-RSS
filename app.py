@@ -11,6 +11,9 @@ OCAT_URL = 'https://overclockers.at'
 RECENT_RES = 'search.php?action=getdaily'
 
 app = Flask(__name__)
+app.config.update(
+    JSONIFY_PRETTYPRINT_REGULAR=False
+)
 
 
 def get_news_html():
