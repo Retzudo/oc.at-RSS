@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>overclockers.at RSS Feed</title>
+        <link>https://overclockers.at</link>
+        <description>overclockers.at is for you pleasure only.</description>
+        <language>de-AT</language>
+
+        {% for item in news %}
+        <item>
+            <title>{{ item.title }}</title>
+            <description><![CDATA[{{ item.description }}]]></description>
+            <link>{{ item.link }}</link>
+            <author>{{ item.author }}</author>
+            <pubDate>{{ item.date }}</pubDate>
+        </item>
+        {% endfor %}
+    </channel>
+</rss>
