@@ -1,5 +1,4 @@
 #!./env/bin/python3
-import pdb
 import datetime
 import urllib.request
 from bs4 import BeautifulSoup
@@ -64,8 +63,8 @@ def parse_recent():
         starter = row.find(class_='starter').find('a').text.strip()
         starter_link = OCAT_URL + row.find(class_='starter').find('a').get('href')
         last_post = row.find(class_='lastpost')
-        # pdb.set_trace()
-        last_post_date = last_post.contents[0].strip()
+        last_post_date_string = last_post.contents[0].strip()
+        last_post_date = datetime.datetime.strptime(last_post_date_string, '%d.%m.%Y %H:%M')
         last_post_by = last_post.contents[1].contents[1].text
         last_post_by_link = OCAT_URL + last_post.contents[1].contents[1].get('href')
         last_post_link = OCAT_URL + last_post.contents[1].contents[3].get('href')
@@ -86,7 +85,7 @@ def parse_recent():
                     'name': last_post_by,
                     'link': last_post_by_link,
                 },
-                'date': last_post_date,
+                'date': last_post_date.isoformat(),
                 'link': last_post_link,
             },
         })
