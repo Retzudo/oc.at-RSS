@@ -41,13 +41,14 @@ def parse_news():
         details = item.find(class_='details')
         author = details.contents[2].strip()
         date_string = details.contents[4].strip()
+        date = datetime.datetime.strptime(date_string, '%d.%m.%Y')
 
         news.append({
             'title': title,
             'link': link,
             'description': description,
             'author': author,
-            'date': date_string,
+            'date': date.date().isoformat(),
         })
 
     return news
