@@ -8,7 +8,7 @@
 
         {% for item in news %}
         <item>
-            <title>{{ item.title }}</title>
+            <title><![CDATA[{{ item.title }}]]></title>
             <description><![CDATA[{{ item.description }}]]></description>
             <link>{{ item.link }}</link>
             <author>{{ item.author }}</author>
