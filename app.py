@@ -3,15 +3,18 @@ import datetime
 import urllib.request
 from bs4 import BeautifulSoup
 from flask import Flask
-from flask import render_template
 from flask import jsonify
+from flask import render_template
+from flask.ext.cors import CORS, cross_origin
 
 OCAT_URL = 'https://overclockers.at'
 RECENT_RES = 'search.php?action=getdaily'
 
 app = Flask(__name__)
+cors = CORS(app)
 app.config.update(
-    JSONIFY_PRETTYPRINT_REGULAR=False
+    JSONIFY_PRETTYPRINT_REGULAR=False,
+    CORS_HEADERS='Content-Type',
 )
 
 
@@ -99,11 +102,13 @@ def index():
 
 
 @app.route('/news.json')
+@cross_origin()
 def news():
     return jsonify(news=parse_news())
 
 
 @app.route('/recent.json')
+@cross_origin()
 def recent():
     return jsonify(threads=parse_recent())
 
