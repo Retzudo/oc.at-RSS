@@ -1,4 +1,3 @@
-#!./env/bin/python3
 import datetime
 import urllib.request
 from bs4 import BeautifulSoup
@@ -24,7 +23,7 @@ def get_news_html():
 
 
 def get_recent_html():
-    response = urllib.request.urlopen("{}/{}".format(OCAT_URL, RECENT_RES))
+    response = urllib.request.urlopen('{}/{}'.format(OCAT_URL, RECENT_RES))
     return response.read()
 
 
@@ -32,7 +31,11 @@ def parse_news():
     html = BeautifulSoup(get_news_html())
     news = []
 
-    for item in html.find_all(class_="news"):
+    for item in html.find_all(class_='news'):
+        if 'mobilead' in item.attrs['class']:
+            # Fix for an ad container that uses the news class
+            continue
+
         a = item.find("h2").find("a")
         title = a.string
         link = OCAT_URL + a.get('href')
