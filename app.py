@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from flask import Flask
 from flask import jsonify
 from flask import render_template
+from flask import make_response
 from flask.ext.cors import CORS, cross_origin
 
 OCAT_URL = 'https://overclockers.at'
@@ -102,7 +103,9 @@ def parse_recent():
 @app.route('/')
 def index():
     news = parse_news()
-    return render_template('rss2.0.xml', news=news)
+    response = make_response(render_template('rss2.0.xml', news=news))
+    response.mimetype = 'application/rss+xml'
+    return response
 
 
 @app.route('/news.json')
