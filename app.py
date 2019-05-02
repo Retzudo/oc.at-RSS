@@ -1,11 +1,11 @@
 import datetime
-import urllib.request
+import urllib
 from bs4 import BeautifulSoup
 from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask import make_response
-from flask.ext.cors import CORS, cross_origin
+from flask_cors import CORS, cross_origin
 
 OCAT_URL = 'https://overclockers.at'
 RECENT_RES = 'search.php?action=getdaily'
@@ -60,7 +60,7 @@ def parse_news():
 
 def parse_recent():
     recent_posts = BeautifulSoup(get_recent_html())
-    recent = [];
+    recent = []
 
     for row in recent_posts.find(id='idThreadTable').find('tbody').find_all('tr'):
         a = row.find(class_='title').find('h5').find('a')
@@ -99,6 +99,7 @@ def parse_recent():
         })
 
     return recent
+
 
 @app.route('/')
 def index():
